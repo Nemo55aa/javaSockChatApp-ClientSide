@@ -12,16 +12,16 @@ import myThread.helloTh;
 import myThread.worldTh;
 
 public class App {
-    static GreetServer srv;
-    public static void main(String[] args) throws IOException   {
-        String tmpString;
-        srv = new GreetServer();
+    GreetClient cli;
+     void main(String[] args) throws IOException   {
+        cli = new GreetClient();
+        
         MyFrame f = new MyFrame();
-        f.l1.setText("waiting Connection from Client...");
+        f.l1.setText("Connecting to server...");
         f.setVisible(true);
-        tmpString = srv.start(8000);
-        f.l1.setText("received: " + tmpString);
+        cli.startConnection("127.0.0.1", 8000);
 
+        String response = cli.sendMessage("hello server");
         helloTh heTh = new helloTh();
         worldTh wldTh = new worldTh();
         
@@ -67,42 +67,41 @@ class MyWindowAdapter extends WindowAdapter {
 }
 
 // ================== socket ================== 
-class GreetServer {
-    private ServerSocket serverSocket;
+class GreetClient {
     private Socket clientSocket;
     private PrintWriter out;
     private BufferedReader in;
-    //private acceptTh acTh;\
-    String greeting;
 
-    public String start(int port) {
+    public void startConnection(String ip, int port) {
         try{
-            serverSocket = new ServerSocket(port);
-            clientSocket = serverSocket.accept();
+            clientSocket = new Socket(ip, port);
             out = new PrintWriter(clientSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            greeting = in.readLine();
-            if ("hello server".equals(greeting)) {
-                System.out.println("hello client");
-            }
-            else {
-                System.out.println("unrecognised greeting");
-            }
-        }catch(IOException e) {
-            e.printStackTrace();
-        }
-        return greeting;
-    }
-
-    public void stop() {
-        try{
-            in.close();
-            out.close();
-            clientSocket.close();
-            serverSocket.close();
+            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));   
         }catch(IOException e){
             e.printStackTrace();
         }
     }
+
+    public String sendMessage(String msg) {
+        try {
+            out.println(msg);
+            String resp = in.readLine();
+            return resp;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void stopConnection() {
+        try {
+            in.close();
+            out.close();
+            clientSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
+
 
