@@ -22,7 +22,8 @@ public class App {
         f.l1.setText("connecting to server...");
         f.setVisible(true);
         while (f.client.isConnected() != true) {
-            f.client.connect("127.0.0.1", 8000);
+            //f.client.connect("127.0.0.1", 8000);
+            f.client.connect("192.168.0.101", 8000);
         }
 
         while(true){

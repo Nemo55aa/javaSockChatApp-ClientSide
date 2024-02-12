@@ -73,11 +73,13 @@ public class clntSockTh extends Thread {
 
     @Override
     public void run(){
+        String tmpString;
         while(true){            // do accepting and receiving here
             try {
-                if(clientSocket != null){                  // When someone DO connected to me am server, focusing to read buffer;
+                tmpString = in.readLine();
+                if(clientSocket != null && tmpString != null){                  // When someone DO connected to me am server, focusing to read buffer;
                 //if(isConnected(clientSocket)){
-                    lineStrBuf = in.readLine();
+                    lineStrBuf = tmpString;
                 }
 
             } catch (Exception e) {
